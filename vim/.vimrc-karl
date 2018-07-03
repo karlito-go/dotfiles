@@ -17,19 +17,21 @@ set backspace=indent,eol,start
 " spell checking shouldn't check sentence capitalization
 set spellcapcheck=
 
+
 "
-" Hotkeys
+" Key Bindings
 "
 
-" Also allow space to be the leader key, not just \
-" This also makes it pop up in the corner when you push it.
-map <space> <leader>
+" Make space the (only) leader key.
+let mapleader = " "
 
-" Make quitting (\q) and saving (\w) more ergonomic
-" \W writes via sudo (must confirm with enter)
-" Note: leader is the \ key in normal mode
+" Make quitting and saving more ergonomic
+" leader-q: confirm save
 noremap <leader>q :confirm qa<cr>
+" leader-w: save
 noremap <leader>w :w<cr>
+" leader-W: save via sudo (must confirm with enter)
+" NB: This writes the file through "sudo tee <filename>"
 noremap <Leader>W :w !sudo tee % > /dev/null
 
 " Toggle settings easily.  The current value is then shown.
@@ -42,7 +44,7 @@ noremap <Leader>s :set spell!<cr>:set spell?<cr>
 noremap <Leader>g gwip
 
 " Edit a file.
-noremap <Leader>e :edit
+noremap <Leader>e :edit<space>
 
 " Tabs
 noremap <Leader>t :tabnew
