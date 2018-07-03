@@ -10,8 +10,6 @@ filetype on
 filetype plugin on
 filetype indent on
 
-
-" generic
 set history=500 	" keep command line history
 set tabpagemax=100      " max tabs (default: 10)
 set ruler		" show the cursor position all the time
@@ -58,8 +56,15 @@ set isfname-==
 set isfname-=,
 set isfname-=#
 
-" Show filetype in status line
-set statusline=%f\ \ \ %y
+" Show filetype in status line (ugh, needs to be more complex to also show ruler)
+"set statusline=%f\ \ \ %y
+
+" netrw browser can do tree view, use that by default.
+" Press 'i' to toggle the 4 view styles: thin, long, multi-column, tree
+let g:netrw_liststyle=3
+
+" netrw browser: hide certain files
+let g:netrw_list_hide = '\.o$,\.pyc$,\.swp$'
 
 
 "
@@ -73,11 +78,11 @@ map Q <Nop>
 let mapleader = " "
 
 " Make quitting and saving more ergonomic
-" leader-q: confirm save
+" space-q: confirm quits (asks to save if modified)
 noremap <leader>q :confirm qa<cr>
-" leader-w: save
+" space-w: save
 noremap <leader>w :w<cr>
-" leader-W: save via sudo (must confirm with enter)
+" space-W: save via sudo (must confirm with enter)
 " NB: This writes the file through "sudo tee <filename>"
 noremap <Leader>W :w !sudo tee % > /dev/null
 
@@ -114,52 +119,43 @@ noremap <C-p> :bprev<CR>
 vnoremap p <Esc>:let current_reg = @"<CR>gvdi<C-R>=current_reg<CR><Esc>
 
 
+
 "
 " Abbreviations
 "
+
 iab pdoc """<cr>"""
 iab ifmain if __name__ == "__main__":
 iab #i #include
 
 
+
 "
-" Display
+" Color theme
 "
 
-" netrw browser can do tree view, use that by default.
-" Press 'i' to toggle the 4 view styles: thin, long, multi-column, tree
-let g:netrw_liststyle=3
+" Coding
+hi PreProc      ctermfg=darkred        cterm=none
+hi Statement    ctermfg=brown         cterm=none
+hi Identifier   ctermfg=cyan            cterm=none
+hi Type         ctermfg=darkgreen      cterm=none
+hi Constant     ctermfg=darkmagenta    cterm=none
 
-" netrw browser: hide certain files
-let g:netrw_list_hide = '\.o$,\.pyc$,\.swp$'
+" The crappy python syntax doesn't distinguish docstring comments from normal strings
+hi String       ctermfg=darkblue           cterm=none
+hi Comment      ctermfg=darkblue           cterm=none
 
-" After moving to a file:
-" -  press "t" to open in a new tab
-" -  press "o" to open in a horiz split
-
-
-
-
-
-" Color scheme
-hi SpellBad	ctermbg=yellow
-hi Identifier   ctermfg=cyan            guifg=cyan cterm=none
-hi String       ctermfg=blue            guifg=blue cterm=none
-hi Comment      ctermfg=blue            guifg=blue cterm=none
-hi PreProc      ctermfg=darkred         guifg=darkred cterm=none
-hi Constant     ctermfg=darkmagenta     guifg=darkmagenta cterm=none
-hi Statement    ctermfg=brown           guifg=brown cterm=none
-hi Type         ctermfg=darkgreen       guifg=darkgreen cterm=none
-hi StatusLine   ctermfg=white ctermbg=blue guifg=white guibg=blue cterm=none
-hi StatusLineNC ctermfg=white ctermbg=black guifg=white guibg=black cterm=none
-
-set guifont=Monaco:h18
+" VIM UX
+hi SpellBad	ctermbg=yellow   ctermfg=red cterm=none
+hi StatusLine   ctermfg=white ctermbg=darkblue cterm=none
+hi StatusLineNC ctermfg=black ctermbg=lightgray cterm=none
 
 
 
 "
-" functions
+" Functions
 "
+
 fun! KarlHighlightTabs()
     highlight SpecialKey term=standout ctermbg=yellow guibg=yellow
     set listchars=tab:>-
@@ -198,8 +194,6 @@ fun! KarlStripTrailingWhitespace()
 endfun
 
 
-
-" Only do this part when compiled with support for autocommands.
 if has("autocmd")
     autocmd BufNewFile,BufRead *.html setlocal shiftwidth=2
 
@@ -232,7 +226,6 @@ endif
 if &term == "screen-256color"
    set term=xterm-256color
 endif
-
 if &term == "tmux-256color"
    set term=xterm-256color
 endif
