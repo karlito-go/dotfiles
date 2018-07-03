@@ -1,0 +1,256 @@
+" karl's vimrc
+set runtimepath^=~/.vim/bundle/swift.vim
+set runtimepath^=~/.vim/bundle/vim-javascript
+set nocompatible
+syntax on
+filetype on
+filetype plugin on
+filetype indent on
+
+" generic
+set history=500
+set path=.,/usr/local/globus/include/gcc32dbg,/usr/local/globus/include/gcc64dbg,/usr/include
+
+" backspace works over anything
+set backspace=indent,eol,start
+
+" spell checking shouldn't check sentence capitalization
+set spellcapcheck=
+
+"
+" Hotkeys
+"
+
+" Also allow space to be the leader key, not just \
+" This also makes it pop up in the corner when you push it.
+map <space> <leader>
+
+" Make quitting (\q) and saving (\w) more ergonomic
+" \W writes via sudo (must confirm with enter)
+" Note: leader is the \ key in normal mode
+noremap <leader>q :confirm qa<cr>
+noremap <leader>w :w<cr>
+noremap <Leader>W :w !sudo tee % > /dev/null
+
+" Toggle settings easily.  The current value is then shown.
+noremap <Leader>p :set paste!<cr>:set paste?<cr>
+noremap <Leader>i :set ignorecase!<cr>:set ignorecase?<cr>
+noremap <Leader>h :set hlsearch!<cr>:set hlsearch?<cr>
+noremap <Leader>s :set spell!<cr>:set spell?<cr>
+
+" Format paragraph
+noremap <Leader>g gwip
+
+" Edit a file.
+noremap <Leader>e :edit
+
+" Tabs
+noremap <Leader>t :tabnew
+nnoremap H gT
+nnoremap L gt
+
+
+" Switch to another buffer.  Type in part of the file name.
+noremap <Leader>b :bu
+
+" Switch back to previous buffer
+noremap <Leader>B <c-^>
+
+" How I show a MRU of files.
+" Set a persistent file mark with m[A-Z].
+" Get to a mark with '[A-Z]
+noremap <Leader>m :marks<CR>
+
+" Browse old files (another MRU)
+noremap <Leader>o :browse old<CR>
+
+" Directory exploring in new tab: \x
+noremap <leader>x :Texplore<cr>
+" Go back to last explorer buffer: \X
+noremap <leader>X :Rexplore<cr>
+
+" Cycling through buffers: ctrl-p=previous, ctrl-n=next
+" Note: This overwrites a built in command, but who uses it instead of j/k?
+noremap <C-n> :bnext<CR>
+noremap <C-p> :bprev<CR>
+
+" control-space does omni complete (note: terminal ctrl-space is nul)
+imap <Nul> <c-x><c-o>
+imap <c-space> <c-x><c-o>
+
+" allow paste in visual mode
+vnoremap p <Esc>:let current_reg = @"<CR>gvdi<C-R>=current_reg<CR><Esc>
+
+
+"
+" Abbreviations
+"
+iab pdoc """<cr>"""
+iab ifmain if __name__ == "__main__":
+iab #i #include
+
+
+"
+" Display
+"
+set encoding=utf-8      " better than latin1 default
+set laststatus=2        " always show status line
+set ruler               " show ruler
+set scrolloff=2         " always keep two lines above/below cursor
+set shortmess+=I        " Don't show intro
+set showcmd
+set showmatch           " briefly show matching bracket
+"set title              " xterm title; not needed with status line
+set visualbell
+set wildmenu            " in completion, can get to via ctrl-p, ctrl-n
+set wildmode=longest:list  " completion like bash
+set wildignore+=*.o
+set wildignore+=*.pyc
+set wildignore+=*.swp
+
+" netrw browser can do tree view, use that by default.
+" Hit 'i' to toggle netrw displays (file size, tree view, short)
+" After moving to a file:
+" -  press "t" to open in a new tab
+" -  press "o" to open in a horiz split
+let g:netrw_liststyle=3
+
+" netrw browser: hide certain files
+let g:netrw_list_hide = '\.o$,\.pyc$,\.swp$'
+
+
+" editing
+" These are just defaults; autocmd/filetype plugins can alter
+set shiftwidth=4
+set softtabstop=4       " should be == shiftwidth, so backspace unindents well
+set smarttab            " hitting tab in front of a line indents SHIFTWIDTH
+set expandtab           " tab / autoindentation puts in spaces
+set ignorecase          " Search is normally insensitive
+set smartcase           " Typing capital letters force case sensitivity
+
+" We want gf to work in shell scripts with VARIABLE=/SOME/PATH
+set isfname-==
+set isfname-=,
+set isfname-=#
+
+
+" Color scheme
+hi SpellBad	ctermbg=yellow
+hi Identifier   ctermfg=cyan            guifg=cyan cterm=none
+hi String       ctermfg=blue            guifg=blue cterm=none
+hi Comment      ctermfg=blue            guifg=blue cterm=none
+hi PreProc      ctermfg=darkred         guifg=darkred cterm=none
+hi Constant     ctermfg=darkmagenta     guifg=darkmagenta cterm=none
+hi Statement    ctermfg=brown           guifg=brown cterm=none
+hi Type         ctermfg=darkgreen       guifg=darkgreen cterm=none
+hi StatusLine   ctermfg=white ctermbg=blue guifg=white guibg=blue cterm=none
+hi StatusLineNC ctermfg=white ctermbg=black guifg=white guibg=black cterm=none
+
+set guifont=Monaco:h18
+
+map Q <Nop>
+
+
+"
+" functions
+"
+fun! KarlHighlightLongLines()
+    highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+    match OverLength /\%80v.\+/
+endfun
+
+fun! KarlNoHighlightLongLines()
+    match none
+endfun
+
+fun! KarlHighlightTabs()
+    highlight SpecialKey term=standout ctermbg=yellow guibg=yellow
+    set listchars=tab:>-
+    set list
+endfun
+
+fun! KarlNoHighlightTabs()
+    set nolist
+endfun
+
+fun! KarlDetectWhitespace()
+python << endpython
+import vim
+nr_unclean = 0
+for line in vim.current.buffer:
+    if line.rstrip() != line:
+        nr_unclean += 1
+
+print "Unclean Lines: %d" % nr_unclean
+print "Name: %s" % vim.current.buffer.name
+cmd = "autocmd BufWritePre <buffer> call KarlStripTrailingWhitespace()"
+if nr_unclean == 0:
+    print "Enabling Whitespace Trimming on Save"
+    vim.command(cmd)
+else:
+    print "Whitespace Trimming Disabled"
+endpython
+endfun
+
+fun! KarlStripTrailingWhitespace()
+    let l = line(".")
+    let c = col(".")
+    %s/\s\+$//e
+    call cursor(l, c)
+endfun
+
+
+
+" Only do this part when compiled with support for autocommands.
+if has("autocmd")
+    autocmd BufNewFile,BufRead *.html setlocal sw=2
+
+    " set fo+=a if you want autoformat.  Sometimes it is just annoying.
+    autocmd BufNewFile,BufRead README,*.txt,*.adoc setlocal tw=78
+
+    " asciidoc
+    autocmd BufNewFile,BufRead *.adoc setlocal filetype=asciidoc
+
+    "autocmd BufNewFile,BufRead *.rs setlocal filetype=rust
+    "autocmd BufNewFile,BufRead *.rs so /Users/karl/rust/syntax.vim
+
+    " public/private all the way to left margin
+    autocmd BufNewFile,BufRead *.cpp,*.h setlocal cino+=g0
+
+    " auto wrap comments in source files
+    autocmd BufNewFile,BufRead *.cpp,*.[chm],*.py,*.sh,*.html
+                \ setlocal fo+=r fo-=o fo-=t tw=78
+
+    autocmd filetype python setlocal keywordprg=pydoc
+
+    " Highlight long lines, for < vim 7.3.  This affects all buffers,
+    " unfortunately.  To undo, run ':match none'
+    "autocmd BufNewFile,BufRead *.cpp,*.h
+        "\ call KarlHighlightLongLines()
+    "autocmd filetype python
+        "\ call KarlHighlightLongLines()
+
+    " Show hard tabs in source files
+    autocmd BufNewFile,BufRead *.cpp,*.h,*.sql,*.sh
+        \ call KarlHighlightTabs()
+    autocmd filetype python
+        \ call KarlHighlightTabs()
+
+    autocmd BufNewFile,BufRead *.test
+        \ call KarlDetectWhitespace()
+endif
+
+
+let g:clang_exec = '~/clang/bin/clang'
+
+" tmux fixes
+if &term == "screen-256color"
+   set term=xterm-256color
+endif
+"
+"
+" ctrl-pageup doesn't work if term=screen.
+" it does work if term=xterm.
+" But don't require term to be "correct".
+" nmap [5;5~ :tabprev<cr>
+" nmap [6;5~ :tabnext<cr>
