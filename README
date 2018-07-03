@@ -1,0 +1,11 @@
+Karl's dotfiles (public / non-security-sensitive / no creds)
+
+To install:
+
+- Install GNU stow: apt-get install stow
+
+- cd <THIS_DIR>
+
+- stow tmux  # creates ~/.tmux.conf symlink
+
+- stow vim  # creates ~/.vimrc-karl symlink
