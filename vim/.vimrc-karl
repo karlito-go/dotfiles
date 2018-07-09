@@ -17,6 +17,17 @@ set showcmd		" display incomplete commands
 set wildmenu		" display completion matches in a status line
 set scrolloff=5         " always keep lines above/below cursor
 
+" Delay (ms) to wait for mappings, e.g. leader key
+set timeout
+set timeoutlen=3000
+
+" Some new defaults.vim settings
+" Delay (ms) to wait for keycodes.
+" To test, go to insert mode, then escape, then O. (has to be capital O)
+" The delay before insert mode happens again is this delay.
+set ttimeout		" time out for key codes
+set ttimeoutlen=100	" wait up to 100ms after Esc for special key
+
 " Do not recognize octal numbers for Ctrl-A and Ctrl-X, most users find it
 " confusing.
 set nrformats-=octal
