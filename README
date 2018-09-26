@@ -9,3 +9,8 @@ To install:
 - stow tmux  # creates ~/.tmux.conf symlink
 
 - stow vim  # creates ~/.vimrc-karl symlink
+
+To update S3:
+
+- aws s3 cp vim/.vimrc-karl s3://debs.globusonline.org/misc/karl-vimrc --acl public-read
+- curl https://s3.amazonaws.com/debs.globusonline.org/misc/karl-vimrc
