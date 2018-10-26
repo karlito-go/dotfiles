@@ -161,6 +161,23 @@ hi SpellBad	ctermbg=yellow   ctermfg=red cterm=none
 hi StatusLine   ctermfg=white ctermbg=darkblue cterm=none
 hi StatusLineNC ctermfg=black ctermbg=lightgray cterm=none
 
+" Please just have normal red/green diff colors
+highlight diffAdded    cterm=none ctermfg=2 
+highlight diffRemoved  cterm=none ctermfg=9 
+highlight diffFile     cterm=none ctermfg=4 
+highlight diffLine     cterm=none ctermfg=4 
+highlight diffSubName  cterm=none ctermfg=4 ctermbg=none
+
+
+" Command to show highlight group under cursor.  
+" Very useful for customizing colors.
+nmap <leader>H :call <SID>SynStack()<CR>
+function! <SID>SynStack()
+    if !exists("*synstack")
+        return
+    endif
+    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
 
 
 "
